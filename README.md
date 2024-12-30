@@ -19,6 +19,7 @@ There are many pre-defined tasks, see [`.vscode/tasks.json`](.vscode/tasks.json)
 
 Take a look at [how I develop using tasks](https://www.allisonthackston.com/articles/vscode_tasks.html) for an idea on how I use tasks in my development.
 
+`sed -i -e 's/\r$//' build.sh` if error is such => bash: ./build.sh: /bin/bash^M: bad interpreter: No such file or directory
 ### Debugging
 
 This template sets up debugging for python files, gdb for cpp programs and ROS launch files.  See [`.vscode/launch.json`](.vscode/launch.json) for configuration details.

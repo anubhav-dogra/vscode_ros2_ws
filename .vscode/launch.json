@@ -64,7 +64,8 @@
       "type": "ros",
       "request": "launch",
       "preLaunchTask": "build",
-      "target": "${workspaceFolder}/install/${input:package}/share/${input:package}/launch/${input:ros_launch}",
+      "target": "/home/ros/ros2_ws/install/${input:package}/share/${input:package}/launch/launch/${input:ros_launch}"
+      // "target": "${workspaceFolder}/install/${input:package}/share/${input:package}/launch/${input:ros_launch}",
     },
   ],
   "inputs": [

@@ -1,0 +1,46 @@
+FROM osrf/ros:humble-desktop
+
+# Add vscode user with same UID and GID as your host system
+# (copied from https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user#_creating-a-nonroot-user)
+ARG USERNAME=ros
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && apt-get update \
+    && apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+
+# Switch from root to user
+USER $USERNAME
+
+# Create a workspace directory for colcon builds within the container
+# WORKDIR /home/$USERNAME/ros2_ws
+
+# Optional: Install additional packages
+# either add sudo or switch to USER root and reswitch to USER ros
+ENV DEBIAN_FRONTEND=noninteractive
+RUN sudo apt-get update \
+    # && apt-get -y install --no-install-recommends <your-package-list-here> \
+    && sudo apt install libeigen3-dev \ 
+    # Install Git
+    && sudo apt install -y git \
+    && sudo apt-get install -y wget \
+    # clean up
+    && sudo apt-get clean \
+    && sudo rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /home/$USERNAME/ros2_ws/src \
+    && cd /home/$USERNAME/ros2_ws/src \
+    && git clone https://github.com/anubhav-dogra/software_robot_library.git
+
+    # Set up environment for sourcing the workspace automatically
+RUN echo "if [ -f /opt/ros/humble/setup.bash ]; then source /opt/ros/humble/setup.bash; fi" >> /home/$USERNAME/.bashrc
+RUN echo "if [ -f /home/$USERNAME/ros2_ws/install/setup.bash ]; then source /home/$USERNAME/ros2_ws/install/setup.bash; fi" >> /home/$USERNAME/.bashrc
+
+# Set the shell to bash
+SHELL ["/bin/bash", "-c"]
+
+# Entry point: Switch to workspace
+ENTRYPOINT ["/bin/bash"]
